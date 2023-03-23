@@ -6,7 +6,7 @@ from discord import *
 import datetime
 import random
 database = "db.db"
-doubleWinRate = 45
+doubleWinRate = 50
 Botid = int(1072269707614355507)
 #Starting and Connecting to DB
 con = sqlite3.connect(database)
@@ -54,59 +54,29 @@ async def coinflip(interaction: discord.Interaction, bet: int):
     con = sqlite3.connect(database)
     cur = con.cursor()
     hit = [0,0]
-    winnings = bet * 2
-    userid = interaction.user.id    
+    madeGame = [0,0]
+    userid = interaction.user.id
+    #Check if user is in database    
     for row in cur.execute("SELECT name, balance FROM coins ORDER BY balance"):
-        #Check if user is in database
         if int(userid) == int(row[0]):
             balance = row[1]
             print("old user")
             hit = [userid, balance]
-
     # Using Hit confirm is the user is in hit        
     if int(userid) == hit[0]:
-        if balance >= bet:
-            print("Valid Bet")
-            newbalance = balance - bet
-            #Remove bet from betters account
-            cur.execute(f"UPDATE coins SET balance = {newbalance} WHERE name = {hit[0]}")
-            con.commit()
-            gameMade = False
-            oldnameid = 1
-            for row in cur.execute("SELECT bet, name FROM games ORDER BY bet"):
-                if bet == row[0]:
-                    gameMade = True
-                    oldnameid = row[1]
-            if userid == oldnameid:
-                await interaction.response.send_message(f"You cannot bet against yourself! Try /coinflip instead!")
-            
+        for row in cur.execute("SELECT name, bet FROM games ORDER by bet"):
+            if userid == row[0]:
+                if bet == row[1]:
+                    madeGame = row
+        if madeGame[0] == userid:
+            if madeGame[1] == bet:
+                cur.execute(f"DELETE FROM games WHERE name = {madeGame[0]} AND bet = {madeGame[1]}")
+                con.commit()
+                await interaction.response.send_message(f"Successfully deleted your Coinflip with a bet of {madeGame[1]}:coin:")
             else:
-                if gameMade == True:
-                    cur.execute(f"DELETE FROM games WHERE bet = {bet}")
-                    con.commit()
-                    pick = random.randint(1,2)
-                    if pick == 1:
-                        bet1 = winnings * 0.99
-                        round(bet1)
-                        oldname = cur.execute(f"Select name, balance FROM coins WHERE name = {oldnameid}")
-                        print(oldname)
-                        balance = bet1 + int(oldname[1])
-                        cur.execute(f"UPDATE coins SET balance = {balance} WHERE name = {oldname}")
-                        con.commit()
-                        await interaction.response.send_message(f"@{oldname} Has won the Double or Nothing worth {winnings} :coin:")
-                    else:
-                        bet1 = winnings * 0.99
-                        round(bet1)
-                        balance = bet1 + hit[1]
-                        cur.execute(f"UPDATE coins SET balance = {balance} WHERE name = {userid}")
-                        con.commit()
-                        await interaction.response.send_message(f"@{userid} Has won the Double or Nothing worth {bet} :coin:")
-                else:
-                    cur.execute(f"INSERT INTO games VALUES ({userid}, {bet})")
-                    con.commit()
-                    await interaction.response.send_message(f"Created a Coinflip with a bet of {bet}:coin:. To cancel do /coinflipcancel {bet}")
+                await interaction.response.send_message(f"You do not have a Coinflip with this bet!")
         else:
-            await interaction.response.send_message(f"Not enough :coin: in your account! Use /deposit")
+            await interaction.response.send_message(f"You do not have a Coinflip game made. Use /Coinflip to make one!")        
     else:                         
         cur.execute(f"INSERT INTO coins VALUES ({int(userid)}, {0})")
         con.commit()
