@@ -100,7 +100,7 @@ async def deposit(interaction: discord.Interaction, ticker: str, deposit: int):
             con.commit()
             await interaction.response.send_message(f"Your balance is {balance}:coin:")
             log = open("log.txt", "a")
-            log.writelines(f"\n{interaction.user.id} Deposited {deposit} C {str(datetime.datetime.now())}")
+            log.writelines(f"\n{interaction.user.id} Deposited {deposit} DB {str(datetime.datetime.now())}")
             log.close()
         #If not, Create Records
         else:
@@ -119,24 +119,20 @@ async def deposit(interaction: discord.Interaction, ticker: str, deposit: int):
 async def withdraw(interaction: discord.Interaction, ticker: str, withdraw: int):
     con = sqlite3.connect(database)
     cur = con.cursor()
-
     try:
         ticker.lower()
     except:
         await interaction.response.send_message(f"Please Enter a Valid Ticker (T3) ")
-
     if ticker == "c":
         userid = interaction.user.id
         hit = [0,0]
         for row in cur.execute("SELECT name, balance FROM coins ORDER BY balance"):
-
             #Check if user is in database
             if int(userid) == int(row[0]):
                 balance = row[1]
                 print("old user")
                 balance = int(balance) - int(withdraw)
                 hit = [int(interaction.user.id), balance]
-
         #If they are, Update Records
         if userid == hit[0]:
             if balance >= withdraw:
@@ -148,14 +144,12 @@ async def withdraw(interaction: discord.Interaction, ticker: str, withdraw: int)
                 log.close()
             else:
                 await interaction.response.send_message(f"Not enough :coin: in your account to Withdraw!")
-
         #If not, Create Records
         else:
             cur.execute(f"INSERT INTO coins VALUES ({int(userid)}, {0})")
             con.commit()
             print(f"new user {userid}")
             await interaction.response.send_message(f"Not enough :coin: in your account to Withdraw!")
-
     elif ticker == "db":
         userid = interaction.user.id
         hit = [0,0]
@@ -168,7 +162,6 @@ async def withdraw(interaction: discord.Interaction, ticker: str, withdraw: int)
                 withdraw = withdraw * 100
                 balance = int(balance) - int(withdraw)
                 hit = [int(interaction.user.id), balance]
-
         #If they are, Update Records
         if userid == hit[0]:
             if balance >= withdraw:
@@ -176,11 +169,10 @@ async def withdraw(interaction: discord.Interaction, ticker: str, withdraw: int)
                 con.commit()
                 await interaction.response.send_message(f"Your balance is {balance}:coin:")
                 log = open("log.txt", "a")
-                log.writelines(f"\n{interaction.user.id} Withdrew {withdraw} C {str(datetime.datetime.now())}")
+                log.writelines(f"\n{interaction.user.id} Withdrew {withdraw} DB {str(datetime.datetime.now())}")
                 log.close()
             else:
                 await interaction.response.send_message(f"Not enough :coin: in your account to Withdraw!")
-
         #If not, Create Records
         else:
             cur.execute(f"INSERT INTO coins VALUES ({int(userid)}, {0})")
@@ -213,9 +205,6 @@ async def cbalance(interaction: discord.Interaction):
 @client.tree.command(name = "doubleornothing")
 @app_commands.describe(bet = "Amount To Bet")
 async def coinflip(interaction: discord.Interaction, bet: int):
-    log = open("log.txt", "a")
-    log.writelines(f"\nDouble Or Nothing Attempted By {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
-    log.close()
     con = sqlite3.connect(database)
     cur = con.cursor()
     hit = [0,0]
@@ -277,9 +266,7 @@ async def coinflip(interaction: discord.Interaction, bet: int):
 @client.tree.command(name = "coinflip")
 @app_commands.describe(bet = "Amount To Bet")
 async def coinflip(interaction: discord.Interaction, bet: int):
-    log = open("log.txt", "a")
-    log.writelines(f"\nDouble Or Nothing Attempted By {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
-    log.close()
+
     con = sqlite3.connect(database)
     cur = con.cursor()
     hit = [0,0]
@@ -307,8 +294,7 @@ async def coinflip(interaction: discord.Interaction, bet: int):
                     gameMade = True
                     oldnameid = row[1]
             if userid == oldnameid:
-                await interaction.response.send_message(f"You cannot bet against yourself! Try /doubleornothing instead!")
-            
+                await interaction.response.send_message(f"You cannot bet against yourself! Try /doubleornothing instead!")            
             else:
                 if gameMade == True:
                     cur.execute(f"DELETE FROM games WHERE bet = {bet}")
@@ -323,6 +309,9 @@ async def coinflip(interaction: discord.Interaction, bet: int):
                         cur.execute(f"UPDATE coins SET balance = {balance} WHERE name = {oldname}")
                         con.commit()
                         await interaction.response.send_message(f"@{oldname} Has won the Double or Nothing worth {winnings} :coin:")
+                        log = open("log.txt", "a")
+                        log.writelines(f"\nCoinflip Played By {interaction.user.mention} with a Value of {bet} from {oldnameid} {str(datetime.datetime.now())}")
+                        log.close()
                     else:
                         bet1 = winnings * 0.99
                         round(bet1)
@@ -330,10 +319,16 @@ async def coinflip(interaction: discord.Interaction, bet: int):
                         cur.execute(f"UPDATE coins SET balance = {balance} WHERE name = {userid}")
                         con.commit()
                         await interaction.response.send_message(f"@{userid} Has won the Double or Nothing worth {bet} :coin:")
+                        log = open("log.txt", "a")
+                        log.writelines(f"\nCoinflip Played By {interaction.user.mention} with a Value of {bet} from {oldnameid} {str(datetime.datetime.now())}")
+                        log.close()
                 else:
                     cur.execute(f"INSERT INTO games VALUES ({userid}, {bet})")
                     con.commit()
                     await interaction.response.send_message(f"Created a Coinflip with a bet of {bet}:coin:. To cancel do /coinflipcancel {bet}")
+                    log = open("log.txt", "a")
+                    log.writelines(f"\nCoinflip Created By {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
+                    log.close()
         else:
             await interaction.response.send_message(f"Not enough :coin: in your account! Use /deposit")
     else:                         
@@ -348,9 +343,6 @@ async def coinflip(interaction: discord.Interaction, bet: int):
 @client.tree.command(name = "coinflipdelete")
 @app_commands.describe(bet = "Coinflip Amount")
 async def coinflip(interaction: discord.Interaction, bet: int):
-    log = open("log.txt", "a")
-    log.writelines(f"\nDouble Or Nothing Attempted By {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
-    log.close()
     con = sqlite3.connect(database)
     cur = con.cursor()
     hit = [0,0]
@@ -373,6 +365,9 @@ async def coinflip(interaction: discord.Interaction, bet: int):
                 cur.execute(f"DELETE FROM games WHERE name = {madeGame[0]} AND bet = {madeGame[1]}")
                 con.commit()
                 await interaction.response.send_message(f"Successfully deleted your Coinflip with a bet of {madeGame[1]}:coin:")
+                log = open("log.txt", "a")
+                log.writelines(f"\nCoinflip Deleted by {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
+                log.close()
             else:
                 await interaction.response.send_message(f"You do not have a Coinflip with this bet!")
         else:

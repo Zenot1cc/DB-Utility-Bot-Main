@@ -48,9 +48,7 @@ async def on_ready():
 @client.tree.command(name = "coinflipdelete")
 @app_commands.describe(bet = "Coinflip Amount")
 async def coinflip(interaction: discord.Interaction, bet: int):
-    log = open("log.txt", "a")
-    log.writelines(f"\nDouble Or Nothing Attempted By {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
-    log.close()
+
     con = sqlite3.connect(database)
     cur = con.cursor()
     hit = [0,0]
@@ -73,6 +71,9 @@ async def coinflip(interaction: discord.Interaction, bet: int):
                 cur.execute(f"DELETE FROM games WHERE name = {madeGame[0]} AND bet = {madeGame[1]}")
                 con.commit()
                 await interaction.response.send_message(f"Successfully deleted your Coinflip with a bet of {madeGame[1]}:coin:")
+                log = open("log.txt", "a")
+                log.writelines(f"\nDouble Or Nothing deleted by {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
+                log.close()
             else:
                 await interaction.response.send_message(f"You do not have a Coinflip with this bet!")
         else:
