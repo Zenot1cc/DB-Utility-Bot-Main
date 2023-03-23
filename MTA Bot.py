@@ -7,7 +7,8 @@ import sqlite3
 database = "db.db"
 Botid = int(1072269707614355507)
 doubleWinRate = 50
-TOKEN = open(".env", "r")
+TOKEN = open("tk.txt", "r")
+
 #Starting and Connecting to DB
 con = sqlite3.connect(database)
 cur = con.cursor()

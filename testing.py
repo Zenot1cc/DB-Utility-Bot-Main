@@ -27,7 +27,7 @@ except:
 
 #Starting and Connecting to Discord
 client = commands.Bot(command_prefix = "!", intents = discord.Intents.all())
-TOKEN = "MTA3MjI2OTcwNzYxNDM1NTUwNw.GTJdvS.RbiDeoMGxvW_qwANUWHsFQKDI98E4BeymQM2Xc"
+TOKEN = open("tk.txt", "r")
 @client.event
 async def on_ready():
     print("ready")
@@ -44,9 +44,9 @@ async def on_ready():
         log.close()
 #####################################################################################################################################
 
-## 2 player coinflip
-@client.tree.command(name = "coinflip")
-@app_commands.describe(bet = "Amount To Bet")
+## Coinflip delete
+@client.tree.command(name = "coinflipdelete")
+@app_commands.describe(bet = "Coinflip Amount")
 async def coinflip(interaction: discord.Interaction, bet: int):
     log = open("log.txt", "a")
     log.writelines(f"\nDouble Or Nothing Attempted By {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
@@ -78,7 +78,7 @@ async def coinflip(interaction: discord.Interaction, bet: int):
                     gameMade = True
                     oldnameid = row[1]
             if userid == oldnameid:
-                await interaction.response.send_message(f"You cannot bet against yourself! Try /doubleornothing instead!")
+                await interaction.response.send_message(f"You cannot bet against yourself! Try /coinflip instead!")
             
             else:
                 if gameMade == True:
