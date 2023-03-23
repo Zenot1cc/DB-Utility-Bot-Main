@@ -1,0 +1,17 @@
+await interaction.response.send_message(f"Your balance is {balance}:coin:")
+await interaction.response.send_message(f"Please Enter a Valid Ticker")
+await interaction.response.send_message(f"Not enough :coin: in your account! Use /deposit")
+await interaction.response.send_message(f"Bot does not have enough :coin: for this action!")
+
+bet
+balance
+userid
+hit
+winnings
+winningsBot
+winningsUser
+botMaxBet
+botBal
+withdraw
+deposit
+
