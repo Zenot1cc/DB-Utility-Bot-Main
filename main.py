@@ -4,12 +4,13 @@ from discord import *
 import datetime
 import sqlite3
 import games
+import json
 database = "db.db"
 Botid = int(1072269707614355507)
 doubleWinRate = 50
 playerTakings = 0.99
 botTakings = 0.01
-TOKEN = "MTA3MjI2OTcwNzYxNDM1NTUwNw.GGa4P0.OPDsKN3QyWiBv50OEU6Mttll0VbnUu1YJYyp9g"
+TOKEN = ""
 
 #Starting and Connecting to DB
 con = sqlite3.connect(database)
