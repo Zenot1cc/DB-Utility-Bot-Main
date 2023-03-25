@@ -10,7 +10,9 @@ Botid = int(1072269707614355507)
 doubleWinRate = 50
 playerTakings = 0.99
 botTakings = 0.01
-TOKEN = ""
+TOKEN = open("tk", "r")
+TOKEN = TOKEN.read()
+print(TOKEN)
 
 #Starting and Connecting to DB
 con = sqlite3.connect(database)
