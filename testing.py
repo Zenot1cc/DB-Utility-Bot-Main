@@ -29,7 +29,7 @@ except:
 
 #Starting and Connecting to Discord
 client = commands.Bot(command_prefix = "!", intents = discord.Intents.all())
-TOKEN = open("tk.txt", "r")
+TOKEN = "MTA3MjI2OTcwNzYxNDM1NTUwNw.GGa4P0.OPDsKN3QyWiBv50OEU6Mttll0VbnUu1YJYyp9g"
 @client.event
 async def on_ready():
     print("ready")
