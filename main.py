@@ -4,7 +4,6 @@ from discord import *
 import datetime
 import sqlite3
 import games
-import json
 database = "db.db"
 Botid = int(1072269707614355507)
 doubleWinRate = 50
@@ -12,8 +11,6 @@ playerTakings = 0.99
 botTakings = 0.01
 TOKEN = open("tk", "r")
 TOKEN = TOKEN.read()
-print(TOKEN)
-
 #Starting and Connecting to DB
 con = sqlite3.connect(database)
 cur = con.cursor()
@@ -186,25 +183,29 @@ async def cbalance(interaction: discord.Interaction):
         cur.execute(f"INSERT INTO coins VALUES ({int(userid)}, {0})") # Add User to Database
         await interaction.response.send_message(f"Your balance is 0:coin:")
     con.close()
-##############################################################################################################################################################
+
 ## Single Player Coinflip
 @client.tree.command(name = "doubleornothing")
 @app_commands.describe(bet = "Amount To Bet")
 async def doubleornothing(interaction: discord.Interaction, bet: int):
     await games.doubleornothing(interaction, bet, doubleWinRate, playerTakings, botTakings, database, Botid)
-##############################################################################################################################################################
+
 ## 2 Player Coinflip
 @client.tree.command(name = "coinflip")
 @app_commands.describe(bet = "Amount To Bet")
 async def coinflip(interaction: discord.Interaction, bet: int):
-    await games.doubleornothing(interaction, bet, playerTakings, botTakings, database)
-#####################################################################################################################################
+    await games.coinflip(interaction, bet, playerTakings, botTakings, database)
 
 ## Coinflip delete
 @client.tree.command(name = "coinflipdelete")
 @app_commands.describe(bet = "Coinflip Amount")
 async def coinflipDelete(interaction: discord.Interaction, bet: int):
     await games.coinflipdelete(interaction, bet, database)
+
+## Coinflip list
+@client.tree.command(name = "coinfliplist")
+async def coinflipList(interaction: discord.Interaction):
+    await games.coinflipList(interaction, database)
 ##############################################################################################################################################################
 ## DB and C Conversion
 @client.tree.command(name = "convert")

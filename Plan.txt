@@ -1,4 +1,3 @@
 Calculate Total profits and Average profit every week.
 Send Command
-GamesList Command
 Embeds

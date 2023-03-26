@@ -101,7 +101,8 @@ async def coinflip(interaction, bet, playerTakings, botTakings, database):
                         balance = playerTake + int(olduserid[1])
                         cur.execute(f"UPDATE coins SET balance = {int(balance)}) WHERE name = {oldname}") # Update Player 2s Balance
                         con.commit()
-                        await interaction.response.send_message(f"@{oldname} Has won the Double or Nothing worth {winnings} :coin:") # Success
+                        user = oldname
+                        await interaction.response.send_message(f"{user.mention} Has won the Double or Nothing worth {winnings} :coin:") # Success
                         log = open("log.txt", "a")
                         log.writelines(f"\nCoinflip Played By {interaction.user.mention} with a Value of {winnings} from {oldnameid} {str(datetime.datetime.now())}")
                         log.close()
@@ -116,7 +117,8 @@ async def coinflip(interaction, bet, playerTakings, botTakings, database):
                         balance = playerTake + newbalance 
                         cur.execute(f"UPDATE coins SET balance = {int(balance)} WHERE name = {userid}") # Update Player 1s Balance
                         con.commit()
-                        await interaction.response.send_message(f"@{userid} Has won the Double or Nothing worth {bet} :coin:") # Success
+                        user = userid
+                        await interaction.response.send_message(f"{user.mention} Has won the Double or Nothing worth {bet} :coin:") # Success
                         log = open("log.txt", "a")
                         log.writelines(f"\nCoinflip Played By {interaction.user.mention} with a Value of {bet} from {olduserid} {str(datetime.datetime.now())}")
                         log.close()
@@ -126,7 +128,7 @@ async def coinflip(interaction, bet, playerTakings, botTakings, database):
                 else:
                     cur.execute(f"INSERT INTO games VALUES ({userid}, {bet})") # Add Game to Database
                     con.commit()
-                    await interaction.response.send_message(f"Created a Coinflip with a bet of {bet}:coin:. To cancel do /coinflipcancel {bet}") # Success
+                    await interaction.response.send_message(f"Created a Coinflip with a bet of {bet}:coin:. To cancel do /coinflipdelete {bet}") # Success
                     log = open("log.txt", "a")
                     log.writelines(f"\nCoinflip Created By {interaction.user.mention} with a Value of {bet} {str(datetime.datetime.now())}")
                     log.close()
@@ -177,3 +179,21 @@ async def coinflipdelete(interaction, bet, database):
         print(f"new user {userid}")
         await interaction.response.send_message(f"You do not have a Coinflip game made. Use /Coinflip to make one!") # Error 
     con.close()
+
+#####################################################################################################################################
+
+## Coinflip list
+async def coinflipList(interaction, database):
+    gameListlist = []
+    gameList = ""
+    count = 0
+    con = sqlite3.connect(database)
+    cur = con.cursor()
+    for row in cur.execute(f"SELECT name, bet FROM games ORDER BY bet"):
+        if count < 5:
+            gameListlist.append(row[1])
+            gameList = gameList + "\n" + str(row[1]) + ":coin:"
+    if len(gameListlist) == 0:
+        await interaction.response.send_message(f"There is currently no active Coinflip Games. Use /Coinflip to make one!") # Error 
+    else:
+        await interaction.response.send_message(f"Current Coinflip Games: {gameList}")
