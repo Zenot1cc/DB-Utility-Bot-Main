@@ -62,7 +62,7 @@ async def doubleornothing(interaction, bet, doubleWinRate, playerTakings, botTak
     con.close()
 ##############################################################################################################################################################
 ## 2 Player Coinflip
-async def coinflip(interaction, bet, playerTakings, botTakings, database):
+async def coinflip(interaction, bet, playerTakings, botTakings, database, client):
     con = sqlite3.connect(database)
     cur = con.cursor()
     hit = [0,0]
@@ -101,7 +101,7 @@ async def coinflip(interaction, bet, playerTakings, botTakings, database):
                         balance = playerTake + int(olduserid[1])
                         cur.execute(f"UPDATE coins SET balance = {int(balance)}) WHERE name = {oldname}") # Update Player 2s Balance
                         con.commit()
-                        user = oldname
+                        user = client.get_user(olduserid)
                         await interaction.response.send_message(f"{user.mention} Has won the Double or Nothing worth {winnings} :coin:") # Success
                         log = open("log.txt", "a")
                         log.writelines(f"\nCoinflip Played By {interaction.user.mention} with a Value of {winnings} from {oldnameid} {str(datetime.datetime.now())}")
@@ -117,7 +117,7 @@ async def coinflip(interaction, bet, playerTakings, botTakings, database):
                         balance = playerTake + newbalance 
                         cur.execute(f"UPDATE coins SET balance = {int(balance)} WHERE name = {userid}") # Update Player 1s Balance
                         con.commit()
-                        user = userid
+                        user = client.get_user(userid)
                         await interaction.response.send_message(f"{user.mention} Has won the Double or Nothing worth {bet} :coin:") # Success
                         log = open("log.txt", "a")
                         log.writelines(f"\nCoinflip Played By {interaction.user.mention} with a Value of {bet} from {olduserid} {str(datetime.datetime.now())}")

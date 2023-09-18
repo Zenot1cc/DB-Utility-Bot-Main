@@ -194,7 +194,7 @@ async def doubleornothing(interaction: discord.Interaction, bet: int):
 @client.tree.command(name = "coinflip")
 @app_commands.describe(bet = "Amount To Bet")
 async def coinflip(interaction: discord.Interaction, bet: int):
-    await games.coinflip(interaction, bet, playerTakings, botTakings, database)
+    await games.coinflip(interaction, bet, playerTakings, botTakings, database, client)
 
 ## Coinflip delete
 @client.tree.command(name = "coinflipdelete")

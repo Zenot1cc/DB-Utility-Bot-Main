@@ -1,0 +1,22 @@
+{
+    "username": "Zenot1c",
+    "content": "a",
+    "embeds": [
+        {
+            "title": "{user.mention}",
+            "description": "",
+            "color": 3342591,
+            "footer": {
+                "text": "Operated by Zenot1c"
+            },
+            "fields": [
+                {
+                    "name": "Current Betting Balance",
+                    "value": "{balance} :coin:",
+                    "inline": true
+                }
+            ]
+        }
+    ],
+    "components": []
+}
