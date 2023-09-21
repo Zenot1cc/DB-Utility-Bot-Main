@@ -138,7 +138,8 @@ async def withdraw(interaction: discord.Interaction, ticker: str, withdraw: int)
     elif ticker == "db":
         userid = interaction.user.id
         hit = [0,0]
-        withdraw = withdraw * 100
+        withdraw = withdraw / 100
+        withdraw = withdraw.floow()
         for row in cur.execute("SELECT name, balance FROM coins ORDER BY balance"):
             if int(userid) == int(row[0]): # Get user from Database
                 balance = row[1]
